@@ -1,0 +1,43 @@
+name: Render wiki
+description: 🚀 Gitea Action to create wiki markdown site 
+
+inputs:
+  wikiPath:
+    description:
+      Path of the folder in which to create the wiki
+    default: wiki
+
+  wikiConfig:
+    description:
+      Wiki config yaml path
+    default: wiki.yaml
+
+outputs:
+  wikiUrl:
+    description:
+      Path to home markdown
+    value: ${{ steps.main.outputs.wikiHomePath }}
+
+runs:
+  using: composite
+  steps:
+    - name: 'Setup yq'
+      uses: dcarbone/install-yq-action@v1.1.1
+
+    - name: 'Setup jq'
+      uses: dcarbone/install-jq-action@v2
+
+    - name: 'Audit tools'
+      shell: bash
+      run: |
+        which jq
+        jq --version
+        which yq
+        yq --version
+
+    - id: post
+      shell: bash
+      run: bash "$GITHUB_ACTION_PATH/render-wiki.sh"
+      env:
+        INPUT_WIKI_PATH: ${{ inputs.wikiPath }}
+        INPUT_WIKI_CONFIG: ${{ inputs.wikiConfig }}

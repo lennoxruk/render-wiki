@@ -1,0 +1,39 @@
+wiki:
+  site:
+    home: Home.md
+    title: The wiki
+    description: |
+      the description\
+      more
+
+  pages:
+    - name: awk info
+      render:
+        - awk: awk --help
+
+    - name: yq and jq
+      render:
+        - yq: yq --help
+        - jq: jq --help
+
+    - name: ls info
+      render:
+        - ls: ls --help
+        - |
+          ### footer more
+          more stuff
+        - "": ps
+
+    - name: Some info
+      render: some detailed info
+
+    - name: Hello test
+      render: |
+        ## Hello
+
+        > World
+
+        ```json
+        { hello: "world" }
+        ```
+
