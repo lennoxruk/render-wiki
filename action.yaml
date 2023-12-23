@@ -21,13 +21,19 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: 'Setup yq'
+    - name: Setup yq
       uses: dcarbone/install-yq-action@v1.1.1
 
-    - name: 'Setup jq'
+    - name: Setup jq
       uses: dcarbone/install-jq-action@v2.1.0
 
-    - name: 'Audit tools'
+    - name: Install dependencies
+      shell: bash
+      run: |
+        apt update
+        apt install dpkg-awk
+
+    - name: Audit tools
       shell: bash
       run: |
         which jq
@@ -35,7 +41,7 @@ runs:
         which yq
         yq --version
         which awk
-        awk -V
+        awk --version
 
     - id: post
       shell: bash
