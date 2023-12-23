@@ -21,8 +21,9 @@ wiki:
         - ls: ls --help
         - |
           ### footer more
+
           more stuff
-        - "": ps
+        - "ps": ps
 
     - name: Some info
       render: some detailed info

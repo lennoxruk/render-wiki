@@ -5,7 +5,6 @@ trap cleanup SIGINT SIGTERM ERR EXIT
 
 cleanup() {
   trap - SIGINT SIGTERM ERR EXIT
-  # script cleanup here
 }
 
 joinPaths() {
@@ -16,13 +15,8 @@ joinPaths() {
 }
 
 makeMarkdownFromCommand() {
-  printf "# $1\n\n"'```plaintext'"\n$($2)\n"'```'"\n"
+  printf "## $1\n\n"'```plaintext'"\n$($2)\n"'```'"\n"
 }
-
-### test inputs to remove ###
-
-INPUT_WIKI_PATH='wiki'
-INPUT_WIKI_CONFIG='./test/demo.yaml'
 
 #### start ####
 
@@ -30,7 +24,7 @@ INPUT_WIKI_CONFIG='./test/demo.yaml'
 [ -z "${INPUT_WIKI_CONFIG-}" ] && echo "No wiki config yaml given" && exit 1
 [ ! -f "${INPUT_WIKI_CONFIG-}" ] && echo "No wiki config yaml found" && exit 1
 
-# creat wiki folder if it does not exist
+# create wiki folder if it does not exist
 mkdir -p "${INPUT_WIKI_PATH}"
 
 #TODO: provide option to optionally clean folder
@@ -68,19 +62,19 @@ for page in "${pages[@]}"; do
 
   for renderItem in "${renderList[@]}"; do
     if jq -e 'keys[0]' >/dev/null 2>&1 <<<"${renderItem}"; then
+      # append content from command output
       item=$(echo "${renderItem}" | jq 'keys[0]' | sed -e 's/^"//' -e 's/"$//')
       command=$(echo "${renderItem}" | jq '.[keys_unsorted[0]]' | sed -e 's/^"//' -e 's/"$//')
-      #echo "itemName=$item command=$command"
-
       makeMarkdownFromCommand "${item}" "${command}" | tee -a ${pathMD}
     else
+      # append content from literal markdown
       markdown=$(echo "${renderItem}" | sed -e 's/^"//' -e 's/"$//')
-      #echo "markdown=${markdown}"
-
-      printf "${markdown}"| tee -a ${pathMD}
+      printf "\n${markdown}\n" | tee -a ${pathMD}
     fi
   done
 
   echo "---"
   ((index++))
 done
+
+echo "wikiHomePath=${homeMD}" >> "$GITHUB_OUTPUT"

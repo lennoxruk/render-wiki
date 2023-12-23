@@ -1,5 +1,5 @@
 name: Render wiki
-description: 🚀 Gitea Action to create wiki markdown site 
+description: 🚀 Action to create wiki markdown 
 
 inputs:
   wikiPath:
@@ -13,7 +13,7 @@ inputs:
     default: wiki.yaml
 
 outputs:
-  wikiUrl:
+  wikiHomePath:
     description:
       Path to home markdown
     value: ${{ steps.main.outputs.wikiHomePath }}
@@ -25,7 +25,7 @@ runs:
       uses: dcarbone/install-yq-action@v1.1.1
 
     - name: 'Setup jq'
-      uses: dcarbone/install-jq-action@v2
+      uses: dcarbone/install-jq-action@v2.1.0
 
     - name: 'Audit tools'
       shell: bash
