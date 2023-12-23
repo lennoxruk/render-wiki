@@ -23,9 +23,13 @@ runs:
   steps:
     - name: 'Setup yq'
       uses: dcarbone/install-yq-action@v1.1.1
+      with:
+        version: 4.40.5
 
     - name: 'Setup jq'
       uses: dcarbone/install-jq-action@v2.1.0
+      with:
+        version: 1.7.1
 
     - name: 'Audit tools'
       shell: bash
@@ -34,6 +38,8 @@ runs:
         jq --version
         which yq
         yq --version
+        which awk
+        awk --version
 
     - id: post
       shell: bash

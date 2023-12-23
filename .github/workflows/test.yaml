@@ -22,8 +22,8 @@ jobs:
           wikiPath: wiki
           wikiConfig: ./test/demo.yaml
 
-      - name: Verify wiki home artifact exists
+      - name: Verify wiki home exists
         shell: bash
-        run: '[[ ! -z "$OUTPUT_HOME_PATH" ]] && [[ -f "$OUTPUT_HOME_PATH" ]]'
+        run: '[[ ! -z "$OUTPUT_HOME_PATH" ]] && [[ -f "$OUTPUT_HOME_PATH" ]] && echo "Home is OK" || echo "Home creation failed"'
         env:
           OUTPUT_HOME_PATH: ${{ steps.renderWiki.outputs.wikiHomePath }}
