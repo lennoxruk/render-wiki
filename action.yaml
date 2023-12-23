@@ -35,7 +35,7 @@ runs:
         which yq
         yq --version
         which awk
-        awk --version
+        awk -V
 
     - id: post
       shell: bash
