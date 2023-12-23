@@ -58,6 +58,8 @@ for page in "${pages[@]}"; do
   renderCSV=$(echo "[$renderRaw]" | tr -d "[]")
   readarray -t -s 1 renderList < <(echo $renderCSV | awk -v FPAT='[^,]*|"[^"]*"' '{for (i=0;i<=NF;i++) print $i}')
 
+  echo "debug:\nrenderCSV: ${renderCSV}\nrenderList: ${renderList}\n"
+  
   echo "page: $name, ${#renderList[@]} items to render"
 
   for renderItem in "${renderList[@]}"; do
