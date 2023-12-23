@@ -1,0 +1,29 @@
+name: Test create
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - LICENSE
+      - README.md
+
+jobs:
+  renderTest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout action code
+        uses: actions/checkout@v4
+
+      - name: Invoke default action
+        id: renderWiki
+        uses: ./
+        with:
+          wikiPath: wiki
+          wikiConfig: ./test/demo.yaml
+
+      - name: Verify wiki home artifact exists
+        shell: bash
+        run: '[[ ! -z "$OUTPUT_HOME_PATH" ]] && [[ -f "$OUTPUT_HOME_PATH" ]]'
+        env:
+          OUTPUT_HOME_PATH: ${{ steps.renderWiki.outputs.wikiHomePath }}
