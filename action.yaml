@@ -31,7 +31,7 @@ runs:
       shell: bash
       run: |
         apt update
-        apt install dpkg-awk
+        apt install gawk
 
     - name: Audit tools
       shell: bash
