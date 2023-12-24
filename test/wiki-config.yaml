@@ -2,33 +2,14 @@ wiki:
   site:
     home: Home.md
     title: The wiki
-    description: |
-      the description\
-      more
+    narrative: |
+      some descriptive stuff\
+      more if needed
+
+      and more
 
   pages:
-    - name: awk info
-      render:
-        - awk: awk --help
-
-    - name: yq and jq
-      render:
-        - yq: yq --help
-        - jq: jq --help
-
-    - name: ls info
-      render:
-        - ls: ls --help
-        - |
-          ### footer more
-
-          more stuff
-        - "ps": ps
-
-    - name: Some info
-      render: some detailed info
-
-    - name: Hello test
+    - title: Hello test
       render: |
         ## Hello
 
@@ -37,4 +18,31 @@ wiki:
         ```json
         { hello: "world" }
         ```
+
+    - title: Some info
+      render: some detailed info
+
+    - title: awk help
+      render:
+        - awk: awk --help
+
+    - title: yq and jq help
+      render:
+        - yq: yq --help
+        - jq: jq --help
+
+    - title: ls ps and text
+      render:
+        - ls: ls --help
+        - |
+          ### more and
+
+          more stuff
+        - "ps": ps
+        - >
+          #### footer
+
+    - title: title only
+
+    - render: render only no page should be created
 

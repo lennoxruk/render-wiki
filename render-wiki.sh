@@ -30,12 +30,13 @@ mkdir -p "${INPUT_WIKI_PATH}"
 #TODO: provide option to optionally clean folder
 #rm -rf "${INPUT_WIKI_PATH}"/*
 
-homeMD=$(joinPaths "${INPUT_WIKI_PATH}" "$(yq '.wiki.site.home' ${INPUT_WIKI_CONFIG})")
+homePageName=$(yq '.wiki.site.home // "Home.md"' ${INPUT_WIKI_CONFIG})
+homePagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${homePageName}")
 
 title="$(yq '.wiki.site.title' ${INPUT_WIKI_CONFIG})"
-desc="$(yq '.wiki.site.description' ${INPUT_WIKI_CONFIG})"
+narrative="$(yq '.wiki.site.narrative' ${INPUT_WIKI_CONFIG})"
 
-printf "\n# $title\n\n$desc\n" | tee ${homeMD}
+printf "\n# $title\n\n$narrative\n" | tee ${homePagePath}
 
 readarray pages < <(yq -o=j -I=0 ".wiki.pages[]" ${INPUT_WIKI_CONFIG})
 
@@ -43,35 +44,36 @@ echo "---"
 
 index=0
 for page in "${pages[@]}"; do
-  name=$(echo "$page" | yq '.name' -)
-  nameMD=$(echo "${name}.md" | sed -r 's/(^|-|_| )([a-z])/\U\2/g')
-  pathMD=$(joinPaths "${INPUT_WIKI_PATH}" "${nameMD}")
+  title=$(echo "${page}" | yq '.title // "none"' -)
+
+  [[ $title = 'none' ]] && echo 'Cannot render page without title' && continue
+
+  pageName=$(echo "${title}.md" | sed -r 's/(^|-|_| )([a-z])/\U\2/g')
+  pagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${pageName}")
 
   # write heading to new markdown page
-  printf "# ${name}\n\n" | tee "${pathMD}"
+  printf "# ${title}\n\n" | tee "${pagePath}"
 
   # write link to home page
-  printf "\n[${name}](${nameMD})\n" | tee -a ${homeMD}
+  printf "\n[${title}](${pageName})\n" | tee -a ${homePagePath}
 
   # get list of markdown renders for page
   readarray renderRaw < <(yq -o=j -I=0 ".wiki.pages[${index}].render" ${INPUT_WIKI_CONFIG})
   renderCSV=$(echo "[$renderRaw]" | tr -d "[]")
   readarray -t -s 1 renderList < <(echo $renderCSV | awk -v FPAT='[^,]*|"[^"]*"' '{for (i=0;i<=NF;i++) print $i}')
 
-  echo "debug:\nrenderCSV: ${renderCSV}\nrenderList: ${renderList}\n"
-  
-  echo "page: $name, ${#renderList[@]} items to render"
+  echo "page: $title, ${#renderList[@]} items to render"
 
   for renderItem in "${renderList[@]}"; do
     if jq -e 'keys[0]' >/dev/null 2>&1 <<<"${renderItem}"; then
       # append content from command output
-      item=$(echo "${renderItem}" | jq 'keys[0]' | sed -e 's/^"//' -e 's/"$//')
+      itemName=$(echo "${renderItem}" | jq 'keys[0]' | sed -e 's/^"//' -e 's/"$//')
       command=$(echo "${renderItem}" | jq '.[keys_unsorted[0]]' | sed -e 's/^"//' -e 's/"$//')
-      makeMarkdownFromCommand "${item}" "${command}" | tee -a ${pathMD}
+      makeMarkdownFromCommand "${itemName}" "${command}" | tee -a ${pagePath}
     else
       # append content from literal markdown
       markdown=$(echo "${renderItem}" | sed -e 's/^"//' -e 's/"$//')
-      printf "\n${markdown}\n" | tee -a ${pathMD}
+      printf "\n${markdown}\n" | tee -a ${pagePath}
     fi
   done
 
@@ -79,4 +81,4 @@ for page in "${pages[@]}"; do
   ((index++))
 done
 
-echo "wikiHomePath=${homeMD}" >> "$GITHUB_OUTPUT"
+echo "wikiHomePath=${homePagePath}" >> "$GITHUB_OUTPUT"
