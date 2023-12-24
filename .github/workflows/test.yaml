@@ -15,15 +15,19 @@ jobs:
       - name: Checkout action code
         uses: actions/checkout@v4
 
-      - name: Invoke default action
+      - name: Invoke render-wiki action
         id: renderWiki
         uses: ./
         with:
           wikiPath: wiki
-          wikiConfig: ./test/demo.yaml
+          wikiConfig: ./test/wiki-config.yaml
 
       - name: Verify wiki home exists
         shell: bash
-        run: '[[ ! -z "$OUTPUT_HOME_PATH" ]] && [[ -f "$OUTPUT_HOME_PATH" ]] && echo "Home is OK" || echo "Home creation failed"'
+        run: |
+          [ ! -z "$OUTPUT_HOME_PATH" ] &&
+          [ -f "$OUTPUT_HOME_PATH" ] &&
+          echo "Home is OK: $OUTPUT_HOME_PATH" ||
+          (echo "Home creation failed" && exit 1)
         env:
           OUTPUT_HOME_PATH: ${{ steps.renderWiki.outputs.wikiHomePath }}

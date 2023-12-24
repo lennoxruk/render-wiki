@@ -10,7 +10,7 @@ inputs:
   wikiConfig:
     description:
       Wiki config yaml path
-    default: wiki.yaml
+    default: wiki-config.yaml
 
 outputs:
   wikiHomePath:
@@ -36,11 +36,9 @@ runs:
     - name: Audit tools
       shell: bash
       run: |
-        which jq
+        which jq yq awk
         jq --version
-        which yq
         yq --version
-        which awk
         awk --version
 
     - id: post
