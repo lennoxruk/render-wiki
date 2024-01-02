@@ -1,0 +1,30 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Job info
+        run: |
+          echo '🎉 Triggered by a ${{ gitea.event_name }} event'
+          echo '🐧 Running on ${{ runner.os }} server hosted by Gitea'
+          echo '🔎 Branch name is ${{ gitea.ref }} and repository is ${{ gitea.repository }}'
+
+      - name: Checkout action code
+        uses: actions/checkout@v4
+
+      - name: Invoke render-wiki action
+        id: renderWiki
+        uses: ./
+
+      - name: Invoke post-wiki action
+        id: postWiki
+        uses: lennoxruk/post-wiki@v1
+
+      - name: Show wiki url
+        run: echo '🍏 Wiki URL is ${{ steps.postWiki.outputs.wikiUrl }}'

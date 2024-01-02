@@ -1,0 +1,16 @@
+wiki:
+  site:
+    title: render-wiki wiki
+    narrative: |
+      This is about the render-wiki
+
+  pages:
+    - title: Hello World
+      render: |
+        ## Hello
+
+        > World
+
+        ```json
+        { hello: "world" }
+        ```
