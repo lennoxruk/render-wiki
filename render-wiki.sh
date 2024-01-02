@@ -48,7 +48,7 @@ for page in "${pages[@]}"; do
 
   [[ $title = 'none' ]] && echo 'Cannot render page without title' && continue
 
-  pageName=$(echo "${title}.md" | sed -r 's/(^|-|_| )([a-z])/\U\2/g')
+  pageName=$(echo "${title}.md" | sed -r 's/(^|-|_| )([a-z])/\U\2/g') | sed -r 's/ //g'
   pagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${pageName}")
 
   # write heading to new markdown page
