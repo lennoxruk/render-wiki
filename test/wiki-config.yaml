@@ -1,6 +1,6 @@
 wiki:
-  site:
-    home: Home.md
+  home:
+    name: Home.md
     title: The wiki
     narrative: |
       some descriptive stuff\

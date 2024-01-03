@@ -6,6 +6,7 @@ on:
     paths-ignore:
       - LICENSE
       - README.md
+      - version.svg
 
 jobs:
   renderTest:

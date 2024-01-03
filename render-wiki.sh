@@ -30,13 +30,13 @@ mkdir -p "${INPUT_WIKI_PATH}"
 #TODO: provide option to optionally clean folder
 #rm -rf "${INPUT_WIKI_PATH}"/*
 
-homePageName=$(yq '.wiki.site.home // "Home.md"' ${INPUT_WIKI_CONFIG})
+homePageName=$(yq '.wiki.home.name // "Home.md"' ${INPUT_WIKI_CONFIG})
 homePagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${homePageName}")
 
-title="$(yq '.wiki.site.title' ${INPUT_WIKI_CONFIG})"
-narrative="$(yq '.wiki.site.narrative' ${INPUT_WIKI_CONFIG})"
+title="$(yq '.wiki.home.title' ${INPUT_WIKI_CONFIG})"
+narrative="$(yq '.wiki.home.narrative' ${INPUT_WIKI_CONFIG})"
 
-printf "\n# $title\n\n$narrative\n" | tee ${homePagePath}
+printf "\n# ${title-}\n\n${narrative-}\n" | tee ${homePagePath}
 
 readarray pages < <(yq -o=j -I=0 ".wiki.pages[]" ${INPUT_WIKI_CONFIG})
 
@@ -48,7 +48,7 @@ for page in "${pages[@]}"; do
 
   [[ $title = 'none' ]] && echo 'Cannot render page without title' && continue
 
-  pageName=$(echo "${title}.md" | sed -r 's/(^|-|_| )([a-z])/\U\2/g' | sed -r 's/ //g')
+  pageName=$(echo "${title}.md" | sed -r 's/(^|-|_| )([a-zA-Z0-9])/\U\2/g')
   pagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${pageName}")
 
   # write heading to new markdown page
