@@ -8,15 +8,19 @@ Useful if there are several items in a repository which provide usage comments a
 
 This action currently overwrites the contents of a wiki folder, it does not clean the folder first.
 
+Developed for use with Gitea actions.
+
 ## How to use
 
-Create a wiki-config.yaml
+Create a wiki-config.yaml and include in workflow.
 
 ### Hello world example
 
-This creates a simple hello world wiki in wiki folder and posts to Gitea wiki for its repository.
+This creates a simple hello world wiki in the wiki folder and posts it to a wiki's repository managed by a Gitea.
 
-For a Gitea repository, create __release.yaml__ in .gitea/workflows folder. For use on a Github repository, put __release.yaml__ in .github/workflows folder and replace the post wiki action with one that will post the wiki folder contents to a Github wiki.
+Create the below workflow in file __release.yaml__ within the .gitea/workflows folder.
+
+For use on a Github repository, put __release.yaml__ in .github/workflows folder and replace the post wiki action with one that will post the contents of the wiki folder to a Github wiki. __Not tested with Github__
 
 ```yaml
 name: Create Hello World wiki
@@ -26,7 +30,7 @@ on:
       - main
 
 jobs:
-  renderTest:
+  renderHelloWiki:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,11 +39,11 @@ jobs:
 
       - name: Invoke render-wiki action
         id: renderWiki
-        uses: lennoxruk/render-wiki@v1.0
+        uses: lennoxruk/render-wiki@v0.2
 
       - name: Invoke post-wiki action
         id: postWiki
-        uses: lennoxruk/post-wiki@v1
+        uses: lennoxruk/post-wiki@v1.4
 
       - name: Show wiki url
         run: echo '🍏 Wiki URL is ${{ steps.postWiki.outputs.wikiUrl }}'
@@ -84,16 +88,16 @@ Define home page details and then add the pages. A link to each page is appended
 
 key | desc
 --- | ---
-name | Home filename, default Home.md
-title | Title text
-narrative | Narrative text
+name | Home filename, default is Home.md
+title | Title text of page
+narrative | Narrative markdown
 
 ### pages
 
 key | desc
 --- | ---
 title | Page title
-render | Content to render
+render | Content to render, can be markdown or key value pair, key is the title and value is the command that will create some markdown or text
 
 Page render examples
 
