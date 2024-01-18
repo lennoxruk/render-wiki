@@ -32,4 +32,4 @@ jobs:
           echo "Home is OK: $OUTPUT_HOME_PATH" ||
           (echo "Home creation failed" && exit 1)
         env:
-          OUTPUT_HOME_PATH: ${{ steps.renderWiki.outputs.wikiHomePath }}
+          OUTPUT_HOME_PATH: ${{ steps.renderTest.outputs.wikiHomePath }}
