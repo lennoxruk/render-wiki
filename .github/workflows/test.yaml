@@ -1,4 +1,4 @@
-name: Test create
+name: Render Test
 on:
   push:
     branches:
@@ -10,6 +10,7 @@ on:
 
 jobs:
   renderTest:
+    name: Verify wiki generation
     runs-on: ubuntu-latest
 
     steps:
@@ -17,10 +18,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Invoke render-wiki action
-        id: renderWiki
+        id: renderTest
         uses: ./
         with:
-          wikiPath: wiki
+          wikiPath: testWiki
           wikiConfig: ./test/wiki-config.yaml
 
       - name: Verify wiki home exists

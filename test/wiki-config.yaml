@@ -40,7 +40,7 @@ wiki:
           more stuff
         - "ps": ps
         - >
-          #### footer
+          ### footer
 
     - title: title only
 
