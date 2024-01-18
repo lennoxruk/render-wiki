@@ -1,13 +1,19 @@
-name: release
+name: Generate Wiki
 
 on:
   push:
     tags:
       - 'v*'
 
+  workflow_run:
+    workflows: ["Render Test"]
+    types:
+      - completed
+
 jobs:
-  release:
+  generateWiki:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion != 'failure' }}
     steps:
       - name: Job info
         run: |
@@ -24,7 +30,7 @@ jobs:
 
       - name: Invoke post-wiki action
         id: postWiki
-        uses: lennoxruk/post-wiki@v1
+        uses: lennoxruk/post-wiki@v1.4
 
       - name: Show wiki url
         run: echo '🍏 Wiki URL is ${{ steps.postWiki.outputs.wikiUrl }}'

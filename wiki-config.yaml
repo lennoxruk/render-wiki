@@ -1,16 +1,21 @@
 wiki:
   home:
-    title: render-wiki wiki
-    narrative: |
-      This is about the render-wiki
+    title: RenderWiki wiki
+    narrative: Render wiki action is a simple mechanism for rendering markdown and other information in a workflow
 
   pages:
     - title: Hello World
       render: |
         ## Hello
 
-        > World
+        World
+        > Everyone
 
         ```json
         { hello: "world" }
         ```
+
+    - title: About Render Wiki 
+      render:
+        - This is about the render-wiki action
+        - "Created on" : date
