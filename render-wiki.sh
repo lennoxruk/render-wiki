@@ -15,7 +15,7 @@ joinPaths() {
 }
 
 makeMarkdownFromCommand() {
-  printf "## $1\n\n"'```plaintext'"\n$($2)\n"'```'"\n"
+  printf "\n## $1\n\n"'```plaintext'"\n$($2)\n"'```'"\n"
 }
 
 #### start ####
@@ -36,7 +36,7 @@ homePagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${homePageName}")
 title="$(yq '.wiki.home.title' ${INPUT_WIKI_CONFIG})"
 narrative="$(yq '.wiki.home.narrative' ${INPUT_WIKI_CONFIG})"
 
-printf "\n# ${title-}\n\n${narrative-}\n" | tee ${homePagePath}
+printf "# ${title-}\n\n${narrative-}\n" | tee ${homePagePath}
 
 readarray pages < <(yq -o=j -I=0 ".wiki.pages[]" ${INPUT_WIKI_CONFIG})
 
@@ -52,7 +52,7 @@ for page in "${pages[@]}"; do
   pagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${pageName}")
 
   # write heading to new markdown page
-  printf "# ${title}\n\n" | tee "${pagePath}"
+  printf "# ${title}\n" | tee "${pagePath}"
 
   # write link to home page
   printf "\n[${title}](${pageName})\n" | tee -a ${homePagePath}
@@ -72,7 +72,7 @@ for page in "${pages[@]}"; do
       makeMarkdownFromCommand "${itemName}" "${command}" | tee -a ${pagePath}
     else
       # append content from literal markdown
-      markdown=$(echo "${renderItem}" | sed -e 's/^"//' -e 's/"$//')
+      markdown=$(echo -ne "${renderItem}" | sed -e 's/^"//' -e 's/"$//')
       printf "\n${markdown}\n" | tee -a ${pagePath}
     fi
   done
