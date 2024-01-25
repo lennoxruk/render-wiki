@@ -8,14 +8,48 @@ cleanup() {
 }
 
 joinPaths() {
-  basePath=${1}
-  subPath=${2}
-  fullPath="${basePath:+$basePath/}$subPath"
+  local basePath=${1}
+  local subPath=${2}
+  local fullPath="${basePath:+$basePath/}$subPath"
   printf "${fullPath}"
 }
 
-makeMarkdownFromCommand() {
+renderMarkdownFromCommand() {
   printf "\n## $1\n\n"'```plaintext'"\n$($2)\n"'```'"\n"
+}
+
+renderItem() {
+    local item=${1-}
+    if jq -e 'keys[0]' >/dev/null 2>&1 <<<"${item}"; then
+      # append content from command output
+      local itemName=$(echo "${item}" | jq 'keys[0]' | sed -e 's/^"//' -e 's/"$//')
+      local command=$(echo "${item}" | jq '.[keys_unsorted[0]]' | sed -e 's/^"//' -e 's/"$//')
+      renderMarkdownFromCommand "${itemName}" "${command}"
+    else
+      # append content from literal markdown
+      local markdown=$(echo -ne "${item}" | sed -e 's/^"//' -e 's/"$//')
+      printf "\n${markdown}\n"
+    fi
+}
+
+renderItems() {
+  local yamlPath="${1-}"
+  local outputFilePath="${2-}"
+
+  # get list of markdown renders
+  local renderRaw
+  readarray renderRaw < <(yq -o=j -I=0 "${yamlPath}" ${INPUT_WIKI_CONFIG})
+  local renderCSV=$(echo "[$renderRaw]" | tr -d "[]")
+  local renderList
+  readarray -t -s 1 renderList < <(echo $renderCSV | awk -v FPAT='[^,]*|"[^"]*"' '{for (i=0;i<=NF;i++) print $i}')
+
+  # render page markdown items
+  echo "${#renderList[@]} items to render"
+  local item
+  for item in "${renderList[@]}"; do
+    [ "${item-}" = "null" ] && continue
+    renderItem "${item}" | tee -a ${outputFilePath}
+  done
 }
 
 #### start ####
@@ -34,9 +68,9 @@ homePageName=$(yq '.wiki.home.name // "Home.md"' ${INPUT_WIKI_CONFIG})
 homePagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${homePageName}")
 
 title="$(yq '.wiki.home.title' ${INPUT_WIKI_CONFIG})"
-narrative="$(yq '.wiki.home.narrative' ${INPUT_WIKI_CONFIG})"
+printf "# ${title-}\n" | tee ${homePagePath}
 
-printf "# ${title-}\n\n${narrative-}\n" | tee ${homePagePath}
+renderItems '.wiki.home.render' "${homePagePath}"
 
 readarray pages < <(yq -o=j -I=0 ".wiki.pages[]" ${INPUT_WIKI_CONFIG})
 
@@ -57,25 +91,9 @@ for page in "${pages[@]}"; do
   # write link to home page
   printf "\n[${title}](${pageName})\n" | tee -a ${homePagePath}
 
-  # get list of markdown renders for page
-  readarray renderRaw < <(yq -o=j -I=0 ".wiki.pages[${index}].render" ${INPUT_WIKI_CONFIG})
-  renderCSV=$(echo "[$renderRaw]" | tr -d "[]")
-  readarray -t -s 1 renderList < <(echo $renderCSV | awk -v FPAT='[^,]*|"[^"]*"' '{for (i=0;i<=NF;i++) print $i}')
-
-  echo "page: $title, ${#renderList[@]} items to render"
-
-  for renderItem in "${renderList[@]}"; do
-    if jq -e 'keys[0]' >/dev/null 2>&1 <<<"${renderItem}"; then
-      # append content from command output
-      itemName=$(echo "${renderItem}" | jq 'keys[0]' | sed -e 's/^"//' -e 's/"$//')
-      command=$(echo "${renderItem}" | jq '.[keys_unsorted[0]]' | sed -e 's/^"//' -e 's/"$//')
-      makeMarkdownFromCommand "${itemName}" "${command}" | tee -a ${pagePath}
-    else
-      # append content from literal markdown
-      markdown=$(echo -ne "${renderItem}" | sed -e 's/^"//' -e 's/"$//')
-      printf "\n${markdown}\n" | tee -a ${pagePath}
-    fi
-  done
+  # write page renders
+  echo "rendering page: $title"
+  renderItems ".wiki.pages[${index}].render" "${pagePath}"
 
   echo "---"
   ((index++))

@@ -2,14 +2,16 @@ wiki:
   home:
     name: Home.md
     title: The wiki
-    narrative: |
-      some descriptive stuff\
-      more if needed
+    render:
+      - |
+        a narrative\
+        some more
 
-      and more
+        and more
+      - "Tested on" : date
 
   pages:
-    - title: Hello test
+    - title: Hello World
       render: |
         ## Hello
 
@@ -45,4 +47,3 @@ wiki:
     - title: title only
 
     - render: render only no page should be created
-
