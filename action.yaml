@@ -12,6 +12,11 @@ inputs:
       Wiki config yaml path
     default: wiki-config.yaml
 
+  wipeWiki:
+    description:
+      Remove existing content before render
+    default: 'false'
+
 outputs:
   wikiHomePath:
     description:
@@ -47,3 +52,4 @@ runs:
       env:
         INPUT_WIKI_PATH: ${{ inputs.wikiPath }}
         INPUT_WIKI_CONFIG: ${{ inputs.wikiConfig }}
+        INPUT_WIPE_WIKI: ${{ inputs.wipeWiki }}

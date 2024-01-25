@@ -9,7 +9,7 @@ wiki:
 
         and more
       - index: page index goes here
-      - "Tested on" : date
+      - "Tested at" : date
 
   pages:
     - title: Hello World

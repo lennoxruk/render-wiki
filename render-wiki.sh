@@ -21,20 +21,21 @@ renderMarkdownFromCommand() {
 renderItem() {
   local item=${1-}
   if jq -e 'keys[0]' >/dev/null 2>&1 <<<"${item}"; then
-    # append content from command output
     local itemName=$(echo "${item}" | jq 'keys[0]' | sed -e 's/^"//' -e 's/"$//')
 
     case "${itemName-}" in
     index)
+      # output page index
       printf "${renderPagesIndex}"
       ;;
     *)
+      # output content from command
       local command=$(echo "${item}" | jq '.[keys_unsorted[0]]' | sed -e 's/^"//' -e 's/"$//')
       renderMarkdownFromCommand "${itemName}" "${command}"
       ;;
     esac
   else
-    # append content from literal markdown
+    # output literal markdown
     local markdown=$(echo -ne "${item}" | sed -e 's/^"//' -e 's/"$//')
     printf "\n${markdown}\n"
   fi
@@ -69,8 +70,8 @@ renderItems() {
 # create wiki folder if it does not exist
 mkdir -p "${INPUT_WIKI_PATH}"
 
-#TODO: provide option to optionally clean folder
-#rm -rf "${INPUT_WIKI_PATH}"/*
+# optionally wipe folder
+[ $INPUT_WIPE_WIKI = 'true' ] && rm -rf "${INPUT_WIKI_PATH}"/*
 
 homePageName=$(yq '.wiki.home.name // "Home.md"' ${INPUT_WIKI_CONFIG})
 homePagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${homePageName}")
@@ -85,9 +86,10 @@ echo "---"
 renderPagesIndex=''
 index=0
 for page in "${pages[@]}"; do
-  title=$(echo "${page}" | yq '.title // "none"' -)
+  title=$(echo "${page}" | yq '.title // "null"' -)
 
-  [ $title = 'none' ] && echo 'Cannot render page without title' && continue
+  [ $title = 'null' ] && echo 'Cannot render page without title' && continue
+  echo "rendering page: ${title}"
 
   pageName=$(echo "${title}.md" | sed -r 's/(^|-|_| )([a-zA-Z0-9])/\U\2/g')
   pagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${pageName}")
@@ -99,7 +101,6 @@ for page in "${pages[@]}"; do
   renderPagesIndex="${renderPagesIndex}"'\n'$(printf "[${title}](${pageName})")'\n'
 
   # write page renders
-  echo "rendering page: $title"
   renderItems ".wiki.pages[${index}].render" "${pagePath}"
 
   echo "---"
