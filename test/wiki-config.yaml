@@ -1,13 +1,14 @@
 wiki:
   home:
     name: Home.md
-    title: The wiki
+    title: The wiki test
     render:
       - |
         a narrative\
         some more
 
         and more
+      - index: page index goes here
       - "Tested on" : date
 
   pages:

@@ -1,7 +1,9 @@
 wiki:
   home:
     title: RenderWiki wiki
-    render: Render wiki action is a simple mechanism for rendering markdown and other information in a workflow
+    render:
+      - Render wiki action is a simple mechanism for rendering markdown and other information in a workflow
+      - index: page index
 
   pages:
     - title: Hello World
