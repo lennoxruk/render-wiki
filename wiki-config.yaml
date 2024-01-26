@@ -4,6 +4,8 @@ wiki:
     render:
       - Render wiki action is a simple mechanism for rendering markdown and other information in a workflow
       - index: page index
+      - |
+        !\u005BMade with RenderWiki\u005D(https://img.shields.io/badge/Made_with-RenderWiki-blue)
 
   pages:
     - title: Hello World

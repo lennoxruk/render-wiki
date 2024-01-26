@@ -17,6 +17,11 @@ inputs:
       Remove existing content before render
     default: 'false'
 
+  pagesOnly:
+    description:
+      Only render pages and omit home page
+    default: 'false'
+
 outputs:
   wikiHomePath:
     description:
@@ -53,3 +58,4 @@ runs:
         INPUT_WIKI_PATH: ${{ inputs.wikiPath }}
         INPUT_WIKI_CONFIG: ${{ inputs.wikiConfig }}
         INPUT_WIPE_WIKI: ${{ inputs.wipeWiki }}
+        INPUT_PAGES_ONLY: ${{ inputs.pagesOnly }}

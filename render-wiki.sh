@@ -73,18 +73,22 @@ mkdir -p "${INPUT_WIKI_PATH}"
 # optionally wipe folder
 [ $INPUT_WIPE_WIKI = 'true' ] && rm -rf "${INPUT_WIKI_PATH}"/*
 
-homePageName=$(yq '.wiki.home.name // "Home.md"' ${INPUT_WIKI_CONFIG})
-homePagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${homePageName}")
+homePagePath='null'
+if [ ! $INPUT_PAGES_ONLY = 'true' ]; then
+  homePageName=$(yq '.wiki.home.name // "Home.md"' ${INPUT_WIKI_CONFIG})
+  homePagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${homePageName}")
 
-title="$(yq '.wiki.home.title' ${INPUT_WIKI_CONFIG})"
-printf "# ${title-}\n" | tee ${homePagePath}
+  title="$(yq '.wiki.home.title' ${INPUT_WIKI_CONFIG})"
+  printf "# ${title-}\n" | tee ${homePagePath}
+fi
 
 readarray pages < <(yq -o=j -I=0 ".wiki.pages[]" ${INPUT_WIKI_CONFIG})
 
 echo "---"
 
 renderPagesIndex=''
-index=0
+pageCounter=0
+
 for page in "${pages[@]}"; do
   title=$(echo "${page}" | yq '.title // "null"' -)
 
@@ -101,12 +105,12 @@ for page in "${pages[@]}"; do
   renderPagesIndex="${renderPagesIndex}"'\n'$(printf "[${title}](${pageName})")'\n'
 
   # write page renders
-  renderItems ".wiki.pages[${index}].render" "${pagePath}"
+  renderItems ".wiki.pages[${pageCounter}].render" "${pagePath}"
 
   echo "---"
-  ((index++))
+  ((pageCounter++))
 done
 
-renderItems '.wiki.home.render' "${homePagePath}"
+[ ! $INPUT_PAGES_ONLY = 'true' ] && renderItems '.wiki.home.render' "${homePagePath}"
 
 echo "wikiHomePath=${homePagePath}" >>"$GITHUB_OUTPUT"
