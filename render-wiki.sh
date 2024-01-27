@@ -15,7 +15,8 @@ joinPaths() {
 }
 
 renderMarkdownFromCommand() {
-  printf "\n## $1\n\n"'```plaintext'"\n$($2)\n"'```'"\n"
+  [ ! -z "${1-}" ] && printf "\n## ${1}\n"
+  printf "\n"'```'"${3}\n$(${2})\n"'```'"\n"
 }
 
 renderItem() {
@@ -31,7 +32,7 @@ renderItem() {
     *)
       # output content from command
       local command=$(echo "${item}" | jq '.[keys_unsorted[0]]' | sed -e 's/^"//' -e 's/"$//')
-      renderMarkdownFromCommand "${itemName}" "${command}"
+      renderMarkdownFromCommand "${itemName}" "${command}" 'plaintext'
       ;;
     esac
   else
