@@ -21,13 +21,15 @@ renderMarkdownFromCommand() {
 
 renderItem() {
   local item=${1-}
+  local pagesList=${2-}
+
   if jq -e 'keys[0]' >/dev/null 2>&1 <<<"${item}"; then
     local itemName=$(echo "${item}" | jq 'keys[0]' | sed -e 's/^"//' -e 's/"$//')
 
     case "${itemName-}" in
     index)
-      # output page index
-      printf "${renderPagesIndex}"
+      # output page index/list
+      printf "${pagesList}"
       ;;
     *)
       # output content from command
@@ -43,8 +45,9 @@ renderItem() {
 }
 
 renderItems() {
-  local yamlPath="${1-}"
-  local outputFilePath="${2-}"
+  local yamlPath=${1-}
+  local outputFilePath=${2-}
+  local pagesList=${3-}
 
   # get list of markdown renders
   local renderRaw
@@ -58,7 +61,7 @@ renderItems() {
   local item
   for item in "${renderList[@]}"; do
     [ "${item-}" = 'null' ] && continue
-    renderItem "${item}" | tee -a ${outputFilePath}
+    renderItem "${item}" "${pagesList}" | tee -a ${outputFilePath}
   done
 }
 
@@ -87,7 +90,7 @@ readarray pages < <(yq -o=j -I=0 ".wiki.pages[]" ${INPUT_WIKI_CONFIG})
 
 echo "---"
 
-renderPagesIndex=''
+renderedPagesList=''
 pageCounter=0
 
 for page in "${pages[@]}"; do
@@ -102,8 +105,8 @@ for page in "${pages[@]}"; do
   # write heading to new markdown page
   printf "# ${title}\n" | tee "${pagePath}"
 
-  # render home page pages index/list
-  renderPagesIndex="${renderPagesIndex}"'\n'$(printf "[${title}](${pageName})")'\n'
+  # render home page, pages index/list
+  renderedPagesList="${renderedPagesList}"'\n'$(printf "[${title}](${pageName})")'\n'
 
   # write page renders
   renderItems ".wiki.pages[${pageCounter}].render" "${pagePath}"
@@ -112,6 +115,6 @@ for page in "${pages[@]}"; do
   ((pageCounter++))
 done
 
-[ ! $INPUT_PAGES_ONLY = 'true' ] && renderItems '.wiki.home.render' "${homePagePath}"
+[ ! $INPUT_PAGES_ONLY = 'true' ] && renderItems '.wiki.home.render' "${homePagePath}" "${renderedPagesList}"
 
 echo "wikiHomePath=${homePagePath}" >>"$GITHUB_OUTPUT"
