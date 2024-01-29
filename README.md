@@ -126,20 +126,28 @@ wiki:
 ```
 
 ## Action reference
-
+<!-- action-docs-inputs -->
 ### Inputs
 
-- __`wikiPath`:__ Path of the folder in which to create the wiki, default: _wiki_
-
-- __`wikiConfig`:__ Wiki config yaml path, default: _wiki-config.yaml_
-
-- __`wipeWiki`:__ Remove existing content before render, default: _'false'_
-
-- __`pagesOnly`:__ Only render pages and omit home page, default: _'false'_
-
+| parameter | description | required | default |
+| --- | --- | --- | --- |
+| wikiPath | Path of the folder in which to create the wiki | `false` | wiki |
+| wikiConfig | Wiki config yaml path | `false` | wiki-config.yaml |
+| wipeWiki | Remove existing content before render | `false` | false |
+| pagesOnly | Only render pages and omit home page | `false` | false |
+<!-- action-docs-inputs -->
+<!-- action-docs-outputs -->
 ### Outputs
 
-- __`wikiHomePath`:__ Path to home markdown
+| parameter | description |
+| --- | --- |
+| wikiHomePath | Path to home markdown |
+<!-- action-docs-outputs -->
+<!-- action-docs-runs -->
+### Runs
+
+This action is a `composite` action.
+<!-- action-docs-runs -->
 
 ## Wiki configuration yaml
 
@@ -174,11 +182,11 @@ wiki:
 
 Home dictionary consists of an optional name, title and list of content to render.
 
-key | desc
---- | ---
-name | Home filename, default is Home.md
-title | Home page title. Appears at top of page.
-render | List of content to render. Each entry can be either literal markdown or key/command pair.
+| key | desc |
+| --- | --- |
+| name | Home filename, default is Home.md |
+| title | Home page title. Appears at top of page. |
+| render | List of content to render. Each entry can be either literal markdown or key/command pair. |
 
 Content from key/command is rendered as a _plaintext_ code block. The key will appear as the command output title above the rendered content. If the key is an empty string the command output title will not be rendered.
 
@@ -188,9 +196,9 @@ To position a page index within the home page, use special render key/command ig
 
 Pages dictionary consists of a list of pairs of titles and list of content to render.
 
-key | desc
---- | ---
-title | Page title. Appears at top of page.
-render | List of content to render. Each entry can be either literal markdown or key/command pair.
+| key | desc |
+| --- | --- |
+| title | Page title. Appears at top of page. |
+| render | List of content to render. Each entry can be either literal markdown or key/command pair. |
 
 Content from key/command is rendered as a _plaintext_ code block. The key will appear as the command output title above the rendered content. If the key is an empty string the command output title will not be rendered.
