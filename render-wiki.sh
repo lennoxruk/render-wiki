@@ -97,10 +97,11 @@ for page in "${pages[@]}"; do
   title=$(echo "${page}" | yq '.title // "null"' -)
 
   [ $title = 'null' ] && echo 'Cannot render page without title' && continue
+  
   echo "rendering page: ${title}"
 
-  pageName=$(echo "${title}.md" | sed -r 's/(^|-|_| )([a-zA-Z0-9])/\U\2/g')
-  pagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${pageName}")
+  pageName=$(echo "${title}" | sed -r 's/(^|-|_| )([a-zA-Z0-9])/\U\2/g')
+  pagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${pageName}.md")
 
   # write heading to new markdown page
   printf "# ${title}\n" | tee "${pagePath}"
