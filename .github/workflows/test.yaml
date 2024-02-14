@@ -7,6 +7,7 @@ on:
       - LICENSE
       - README.md
       - version.svg
+      - wiki-config.yaml
 
 jobs:
   renderTest:
