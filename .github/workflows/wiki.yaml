@@ -1,31 +1,26 @@
-name: Generate Wiki
+name: Make Wiki
 
 on:
   push:
-    tags:
-      - 'v*'
-
-  workflow_run:
-    workflows: ["Render Test"]
-    types:
-      - completed
+    branches:
+      - main
+    paths:
+      - 'wiki-config.yaml'
 
 jobs:
-  generateWiki:
+  makeWiki:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion != 'failure' }}
     steps:
       - name: Job info
         run: |
           echo '🎉 Triggered by a ${{ gitea.event_name }} event'
-          echo '🐧 Running on ${{ runner.os }} server hosted by Gitea'
+          echo '🐧 Running on ${{ runner.os }} server'
           echo '🔎 Branch name is ${{ gitea.ref }} and repository is ${{ gitea.repository }}'
 
       - name: Checkout action code
         uses: actions/checkout@v4
 
       - name: Invoke render-wiki action
-        id: renderWiki
         uses: ./
 
       - name: Invoke post-wiki action
