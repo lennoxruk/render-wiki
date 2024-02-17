@@ -19,21 +19,32 @@ renderMarkdownFromCommand() {
   printf "\n"'```'"${3}\n$(${2})\n"'```'"\n"
 }
 
+renderBadge() {
+  local prefix suffix colour
+  local IFS='-'
+  read -r prefix suffix colour <<< "${1-}"
+  printf "\n![${prefix} ${suffix}](https://img.shields.io/badge/${prefix}-${suffix}-${colour:-blue})\n"
+}
+
 renderItem() {
   local item=${1-}
   local pagesIndexMD=${2-}
 
   if jq -e 'keys[0]' >/dev/null 2>&1 <<<"${item}"; then
-    local itemName=$(echo "${item}" | jq 'keys[0]' | sed -e 's/^"//' -e 's/"$//')
+    local itemName=$(echo "${item}" | jq -r 'keys[0]')
 
     case "${itemName-}" in
     index)
       # output page index/list
       printf "${pagesIndexMD}"
       ;;
+    badge)
+      local badgeDef=$(echo "${item}" | jq -r '.[keys_unsorted[0]]')
+      renderBadge "${badgeDef}"
+      ;;
     *)
       # output content from command
-      local command=$(echo "${item}" | jq '.[keys_unsorted[0]]' | sed -e 's/^"//' -e 's/"$//')
+      local command=$(echo "${item}" | jq -r '.[keys_unsorted[0]]')
       renderMarkdownFromCommand "${itemName}" "${command}" 'plaintext'
       ;;
     esac

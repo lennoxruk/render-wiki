@@ -1,11 +1,11 @@
 wiki:
   home:
-    title: RenderWiki wiki
+    title: Render Wiki Action Wiki
     render:
-      - Render wiki action is a simple mechanism for rendering markdown and other information in a workflow
-      - index: page index
-      - |
-        !\u005BMade with RenderWiki\u005D(https://img.shields.io/badge/Made_with-RenderWiki-blue)
+      - Render wiki action is a simple mechanism for rendering markdown and other information in a workflow.
+      - index:
+      - See README for usage.
+      - badge: Generated_with-RenderWiki
 
   pages:
     - title: Hello World
@@ -19,7 +19,25 @@ wiki:
         { hello: "world" }
         ```
 
+    - title: Examples
+      render:
+        - '## Table'
+        - |
+          | animal | legs |
+          |--------|------|
+          | horse  | 4    |
+          | monkey | 2    |
+        - '## Badge'
+        - badge: This_Is_Pink-Example-pink
+        - '## Date/time now'
+        - '' : date
+        - '## Running Processes'
+        - '': ps aux
+        - |
+          ## Url link
+          \u005BGoogle\u005D(https://google.com)
+
     - title: About Render Wiki 
       render:
         - This is about the render-wiki action
-        - "Created on" : date
+        - 'Created on' : date
