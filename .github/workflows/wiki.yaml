@@ -25,7 +25,9 @@ jobs:
 
       - name: Invoke post-wiki action
         id: postWiki
-        uses: lennoxruk/post-wiki@v1.4
+        uses: lennoxruk/post-wiki@v1.5
+        with:
+          removeHistory: true
 
       - name: Show wiki url
         run: echo '🍏 Wiki URL is ${{ steps.postWiki.outputs.wikiUrl }}'
