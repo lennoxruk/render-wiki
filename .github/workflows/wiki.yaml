@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - wiki-config.yaml
+      - render-wiki.sh
 
 jobs:
   makeWiki:
