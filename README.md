@@ -24,7 +24,7 @@ Create a workflow and create the config file, wiki-config.yaml is the default na
 <!-- omit from toc -->
 ### Workflow example
 
-This example creates the  wiki defined in wiki-config.yaml in the wiki folder and posts it to a wiki's repository managed by Gitea.
+This example creates the wiki defined in wiki-config.yaml in the wiki folder and posts it to a wiki's repository managed by Gitea.
 
 First create a workflow file __release.yaml__ within the .gitea/workflows folder.
 
@@ -199,7 +199,7 @@ Home dictionary consists of an optional name, title and list of content to rende
 | key    | description                                                                     |
 |--------|---------------------------------------------------------------------------------|
 | name   | Home filename, default is Home.md                                               |
-| title  | Home page title. Appears at top of page.                                        |
+| title  | Home page title which appears as the main page heading.                         |
 | render | List of content to render. See [rendered list content](#rendered-list-content). |
 
 To position a page index within the home page, use special render key/value, ```index: page index```. This can be placed anywhere within the home render list; see examples.
@@ -209,10 +209,10 @@ To position a page index within the home page, use special render key/value, ```
 
 Pages dictionary consists of a list of pairs of titles and list of content to render.
 
-| key    | description                                                                     |
-|--------|---------------------------------------------------------------------------------|
-| title  | Page title. Appears at top of page.                                             |
-| render | List of content to render. See [rendered list content](#rendered-list-content). |
+| key    | description                                                                                                                  |
+|--------|------------------------------------------------------------------------------------------------------------------------------|
+| title  | Page title which appears as the main page heading. Used to form the filename of the page so value must be unique.            |
+| render | List of content to render. See [rendered list content](#rendered-list-content). If not present then no page will be created. |
 
 <!-- omit from toc -->
 ### rendered list content

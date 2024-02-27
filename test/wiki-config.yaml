@@ -46,6 +46,6 @@ wiki:
         - >
           ### footer
 
-    - render: render only no page should be created
+    - render: render only must have title so no page should be created
 
-    - title: title only
+    - title: title only placeholder

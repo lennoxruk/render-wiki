@@ -15,11 +15,12 @@ joinPaths() {
 }
 
 renderMarkdownFromCommand() {
-  local title=${1-}
+  local heading=${1-}
   local command=${2-}
   local lang=${3-}
 
-  [ ! -z "${title-}" ] && printf "\n## ${title}\n"
+  [ -z "${command-}" ] && return
+  [ ! -z "${heading-}" ] && printf "\n## ${heading}\n"
   printf "\n"'```'"${lang}\n$(${command})\n"'```'"\n"
 }
 
@@ -27,7 +28,7 @@ renderBadge() {
   local prefix suffix colour
   local IFS='-'
 
-  read -r prefix suffix colour <<< "${1-}"
+  read -r prefix suffix colour <<<"${1-}"
   printf "\n![${prefix} ${suffix}](https://img.shields.io/badge/${prefix}-${suffix}-${colour:-blue})\n"
 }
 
@@ -83,15 +84,22 @@ renderItems() {
 
 #### start ####
 
-[ -z "${INPUT_WIKI_PATH-}" ] && echo "No wiki path given" && exit 1
-[ -z "${INPUT_WIKI_CONFIG-}" ] && echo "No wiki config yaml given" && exit 1
-[ ! -f "${INPUT_WIKI_CONFIG-}" ] && echo "No wiki config yaml found" && exit 1
+[ -z "${INPUT_WIKI_PATH-}" ] &&
+  echo "No wiki path given" &&
+  exit 1
+[ -z "${INPUT_WIKI_CONFIG-}" ] &&
+  echo "No wiki config yaml given" &&
+  exit 1
+[ ! -f "${INPUT_WIKI_CONFIG-}" ] &&
+  echo "No wiki config yaml found" &&
+  exit 1
 
 # create wiki folder if it does not exist
 mkdir -p "${INPUT_WIKI_PATH}"
 
 # optionally wipe folder
-[[ $INPUT_WIPE_WIKI = 'true' ]] && rm -rf "${INPUT_WIKI_PATH}"/*
+[[ $INPUT_WIPE_WIKI = 'true' ]] &&
+  rm -rf "${INPUT_WIKI_PATH}"/*
 
 homePagePath='null'
 if [[ ! $INPUT_PAGES_ONLY = 'true' ]]; then
@@ -108,21 +116,28 @@ pagesIndexMD=''
 pageCounter=-1
 
 for page in "${pages[@]}"; do
-  echo "---"
-
   ((pageCounter++))
 
+  echo "--- New page definition (${pageCounter})"
+
   title=$(echo "${page}" | yq '.title // "null"' -)
+  [[ $title = 'null' ]] &&
+    echo 'Cannot render page without title' &&
+    continue
 
-  [[ $title = 'null' ]] && echo 'Cannot render page without title' && continue
-
-  echo "--- rendering page: ${title}"
+  echo "--- Rendering page: ${title}"
 
   pageName=$(echo "${title}" | sed -r 's/(^|-|_| )([a-zA-Z0-9])/\U\2/g')
   pagePath=$(joinPaths "${INPUT_WIKI_PATH}" "${pageName}.md")
 
-  # render home page, pages index/list
-  pagesIndexMD="${pagesIndexMD}"'\n'$(printf "\u002D [${title}](${pageName})")'\n'
+  # append to pages index/list for home page
+  [[ ! $INPUT_PAGES_ONLY = 'true' ]] &&
+    pagesIndexMD="${pagesIndexMD}"'\n'$(printf "\u002D [${title}](${pageName})")'\n'
+
+  # only create a page if there is a render key
+  [[ $(echo "${page}" | yq '. | has("render")') = 'false' ]] &&
+    echo 'No page content to render' &&
+    continue
 
   # write heading to new markdown page
   printf "# ${title}\n" | tee "${pagePath}"
@@ -131,8 +146,9 @@ for page in "${pages[@]}"; do
   renderItems ".wiki.pages[${pageCounter}].render" "${pagePath}"
 done
 
-echo "---"
+echo '--- Finished pages'
 
-[[ ! $INPUT_PAGES_ONLY = 'true' ]] && renderItems '.wiki.home.render' "${homePagePath}" "${pagesIndexMD}"
+[[ ! $INPUT_PAGES_ONLY = 'true' ]] &&
+  renderItems '.wiki.home.render' "${homePagePath}" "${pagesIndexMD}"
 
 echo "wikiHomePath=${homePagePath}" >>"$GITHUB_OUTPUT"
