@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Invoke render-wiki action
-        uses: lennoxruk/render-wiki@v1.1
+        uses: lennoxruk/render-wiki@v1.2
 
       - name: Invoke post-wiki action
         id: postWiki
