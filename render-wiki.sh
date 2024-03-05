@@ -66,20 +66,27 @@ renderItems() {
   local outputFilePath=${2-}
   local pagesIndexMD=${3-}
 
+  # set terminal columns
+  local renderCols=$(yq e "${yamlPath}.columns // \"${TERM_COLS}\""  ${INPUT_WIKI_CONFIG})
+  printf '\033[8;%d;%dt' ${TERM_ROWS} ${renderCols}
+
   # get list of markdown renders
   local renderRaw
-  readarray renderRaw < <(yq -o=j -I=0 "${yamlPath}" ${INPUT_WIKI_CONFIG})
+  readarray renderRaw < <(yq -o=j -I=0 "${yamlPath}.render" ${INPUT_WIKI_CONFIG})
   local renderCSV=$(echo "[$renderRaw]" | tr -d "[]")
   local renderList
   readarray -t -s 1 renderList < <(echo $renderCSV | awk -v FPAT='[^,]*|"[^"]*"' '{for (i=0;i<=NF;i++) print $i}')
 
   # render page markdown items
-  echo "${#renderList[@]} items to render"
+  echo "${#renderList[@]} items to render, columns: ${renderCols}"
   local item
   for item in "${renderList[@]}"; do
     [ "${item-}" = 'null' ] && continue
     renderItem "${item}" "${pagesIndexMD}" | tee -a ${outputFilePath}
   done
+
+  # reset terminal columns
+  printf '\033[8;%d;%dt' ${TERM_ROWS} ${TERM_COLS}
 }
 
 #### start ####
@@ -96,6 +103,10 @@ renderItems() {
 
 # create wiki folder if it does not exist
 mkdir -p "${INPUT_WIKI_PATH}"
+
+# define constants
+readonly TERM_COLS=150
+readonly TERM_ROWS="$(stty size | cut -d ' ' -f 1)"
 
 # optionally wipe folder
 [[ $INPUT_WIPE_WIKI = 'true' ]] &&
@@ -143,12 +154,12 @@ for page in "${pages[@]}"; do
   printf "# ${title}\n" | tee "${pagePath}"
 
   # write page renders
-  renderItems ".wiki.pages[${pageCounter}].render" "${pagePath}"
+  renderItems ".wiki.pages[${pageCounter}]" "${pagePath}"
 done
 
 echo '--- Finished pages'
 
 [[ ! $INPUT_PAGES_ONLY = 'true' ]] &&
-  renderItems '.wiki.home.render' "${homePagePath}" "${pagesIndexMD}"
+  renderItems '.wiki.home' "${homePagePath}" "${pagesIndexMD}"
 
 echo "wikiHomePath=${homePagePath}" >>"$GITHUB_OUTPUT"

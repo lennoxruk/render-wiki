@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Invoke render-wiki action
-        uses: lennoxruk/render-wiki@v1.2
+        uses: lennoxruk/render-wiki@v1.3
 
       - name: Invoke post-wiki action
         id: postWiki
@@ -70,6 +70,7 @@ wiki:
       - This is about the world
       - index: page index
       - cool
+      - badge: Hello-World
 
   pages:
     - title: Hello World
@@ -98,7 +99,7 @@ wiki:
       - Example compound wiki created by executing commands mixed with literal markdown
       - index: page index goes here
       - "Example created at" : date
-      - badge: Generated_with-RenderWiki
+      - badge: Generated_with-RenderWiki-pink
 
   pages:
     - title: Folder Contents
@@ -110,6 +111,7 @@ wiki:
       render: This is some really detailed information
 
     - title: yq and jq help
+      columns: 30
       render:
         - Rendered content from yq and jq help
         - yq: yq --help
@@ -196,11 +198,12 @@ wiki:
 
 Home dictionary consists of an optional name, title and list of content to render.
 
-| key    | description                                                                     |
-|--------|---------------------------------------------------------------------------------|
-| name   | Home filename, default is Home.md                                               |
-| title  | Home page title which appears as the main page heading.                         |
-| render | List of content to render. See [rendered list content](#rendered-list-content). |
+| key     | description                                                                     |
+|---------|---------------------------------------------------------------------------------|
+| name    | Home filename, default is Home.md                                               |
+| title   | Home page title which appears as the main page heading.                         |
+| render  | List of content to render. See [rendered list content](#rendered-list-content). |
+| columns | Terminal column character width. Default: 150                                   |
 
 To position a page index within the home page, use special render key/value, ```index: page index```. This can be placed anywhere within the home render list; see examples.
 
@@ -209,10 +212,11 @@ To position a page index within the home page, use special render key/value, ```
 
 Pages dictionary consists of a list of pairs of titles and list of content to render.
 
-| key    | description                                                                                                                  |
-|--------|------------------------------------------------------------------------------------------------------------------------------|
-| title  | Page title which appears as the main page heading. Used to form the filename of the page so value must be unique.            |
-| render | List of content to render. See [rendered list content](#rendered-list-content). If not present then no page will be created. |
+| key     | description                                                                                                                  |
+|---------|------------------------------------------------------------------------------------------------------------------------------|
+| title   | Page title which appears as the main page heading. Used to form the filename of the page so value must be unique.            |
+| render  | List of content to render. See [rendered list content](#rendered-list-content). If not present then no page will be created. |
+| columns | Terminal column character width. Default: 150                                                                                |
 
 <!-- omit from toc -->
 ### rendered list content
@@ -221,9 +225,9 @@ Non key/value pair list items are rendered as literal markdown.
 
 Special key/values from the following table are rendered as specified. If key is not in the table below then the value will be executed as a shell command.
 
-| key   | value         | description                                                    |
-|-------|---------------|----------------------------------------------------------------|
-| index | n/a           | List of sub pages/index on Home page. Does nothing on subpages |
-| badge | badge content | Static badge using [Shields IO](https://shields.io/badges).    |
+| key   | value         | description                                                                                                    |
+|-------|---------------|----------------------------------------------------------------------------------------------------------------|
+| index | n/a           | List of sub pages/index on Home page. Cannot use on subpages, only for home page.                              |
+| badge | badge content | Static badge using [Shields IO](https://shields.io/badges). Format: prefix-suffix-colour, default colour: blue |
 
 Content from key/command is rendered as a _plaintext_ code block. The command is executed and the output captured. The key will appear as the command output title above the rendered content. If the key is an empty string the command output title will not be rendered.

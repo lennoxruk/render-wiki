@@ -31,7 +31,9 @@ wiki:
         - awk: awk --help
 
     - title: yq and jq help
+      columns: 30
       render:
+        - Reduced column width
         - yq: yq --help
         - jq: jq --help
 
