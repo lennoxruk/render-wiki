@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths:
+      - '**/wiki.yaml'
       - wiki-config.yaml
       - render-wiki.sh
 

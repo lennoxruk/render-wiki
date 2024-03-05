@@ -3,11 +3,11 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - LICENSE
-      - README.md
-      - version.svg
-      - wiki-config.yaml
+    paths:
+      - '**/test.yaml'
+      - 'test/**'
+      - render-wiki.sh
+      - action.yaml
 
 jobs:
   renderTest:
